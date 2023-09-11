@@ -98,7 +98,7 @@ func newConnector(logger *zap.Logger, config component.Config, ticker *clock.Tic
 	logger.Info("Building spanmetrics connector")
 	cfg := config.(*Config)
 
-	metricKeyToDimensionsCache, err := cache.NewCache[metrics.Key, pcommon.Map](cfg.DimensionsCacheSize)
+	metricKeyToDimensionsCache, err := cache.NewCache[metrics.Key, pcommon.Map](cfg.DimensionsCacheSize, cfg.DimensionsCacheTTL)
 	if err != nil {
 		return nil, err
 	}

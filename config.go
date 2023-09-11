@@ -43,6 +43,8 @@ type Config struct {
 	// Optional. See defaultDimensionsCacheSize in connector.go for the default value.
 	DimensionsCacheSize int `mapstructure:"dimensions_cache_size"`
 
+	DimensionsCacheTTL time.Duration `mapstructure:"dimensions_cache_ttl"`
+
 	AggregationTemporality string `mapstructure:"aggregation_temporality"`
 
 	Histogram HistogramConfig `mapstructure:"histogram"`

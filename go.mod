@@ -3,7 +3,6 @@ module github.com/CarnegieMellon-PlantD/plantdconnector
 go 1.21.0
 
 require (
-	github.com/hashicorp/golang-lru v1.0.2
 	github.com/lightstep/go-expohisto v1.0.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.84.0
 	go.opentelemetry.io/collector/component v0.84.0
@@ -22,6 +21,7 @@ require (
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.6
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/knadh/koanf/providers/confmap v0.1.0 // indirect

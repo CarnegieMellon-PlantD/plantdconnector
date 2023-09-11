@@ -4,7 +4,9 @@
 package cache
 
 import (
-	"github.com/hashicorp/golang-lru/simplelru"
+	"time"
+
+	"github.com/hashicorp/golang-lru/v2/expirable"
 )
 
 // Cache consists of an LRU cache and the evicted items from the LRU cache.
@@ -15,19 +17,16 @@ import (
 //
 // Important: This implementation is non-thread safe.
 type Cache[K comparable, V any] struct {
-	lru          simplelru.LRUCache
+	lru          *expirable.LRU[K, V]
 	evictedItems map[K]V
 }
 
 // NewCache creates a Cache.
-func NewCache[K comparable, V any](size int) (*Cache[K, V], error) {
+func NewCache[K comparable, V any](size int, ttl time.Duration) (*Cache[K, V], error) {
 	evictedItems := make(map[K]V)
-	lruCache, err := simplelru.NewLRU(size, func(key any, value any) {
-		evictedItems[key.(K)] = value.(V)
-	})
-	if err != nil {
-		return nil, err
-	}
+	lruCache := expirable.NewLRU[K, V](size, func(key K, value V) {
+		evictedItems[key] = value
+	}, ttl)
 
 	return &Cache[K, V]{
 		lru:          lruCache,
@@ -51,7 +50,7 @@ func (c *Cache[K, V]) Add(key K, value V) bool {
 // Get an item from the LRU cache or evicted items.
 func (c *Cache[K, V]) Get(key K) (V, bool) {
 	if val, ok := c.lru.Get(key); ok {
-		return val.(V), ok
+		return val, ok
 	}
 	val, ok := c.evictedItems[key]
 
