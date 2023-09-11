@@ -3,11 +3,20 @@ module github.com/CarnegieMellon-PlantD/plantdconnector
 go 1.21.0
 
 require (
+	github.com/hashicorp/golang-lru v1.0.2
+	github.com/lightstep/go-expohisto v1.0.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatautil v0.84.0
 	go.opentelemetry.io/collector/component v0.84.0
 	go.opentelemetry.io/collector/connector v0.84.0
 	go.opentelemetry.io/collector/consumer v0.84.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0014
+	go.opentelemetry.io/collector/semconv v0.84.0
 	go.uber.org/zap v1.25.0
+)
+
+require (
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	go.uber.org/goleak v1.2.1 // indirect
 )
 
 require (
@@ -22,6 +31,7 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/tilinna/clock v1.1.0
 	go.opentelemetry.io/collector/config/configtelemetry v0.84.0 // indirect
 	go.opentelemetry.io/collector/confmap v0.84.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0014 // indirect

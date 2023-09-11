@@ -2,41 +2,43 @@ package plantdconnector
 
 import (
 	"context"
+	"time"
 
+	"github.com/tilinna/clock"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/connector"
 	"go.opentelemetry.io/collector/consumer"
+
+	"github.com/CarnegieMellon-PlantD/plantdconnector/internal/metadata"
 )
 
-const (
-	defaultVal = "request.n"
-	// this is the name used to refer to the connector in the config.yaml
-	typeStr = "plantdconnector"
-)
-
-// NewFactory creates a factory for example connector.
+// NewFactory creates a factory for the spanmetrics connector.
 func NewFactory() connector.Factory {
-	// OpenTelemetry connector factory to make a factory for connectors
-
 	return connector.NewFactory(
-		typeStr,
+		metadata.Type,
 		createDefaultConfig,
-		connector.WithTracesToMetrics(createTracesToMetricsConnector, component.StabilityLevelAlpha))
+		connector.WithTracesToMetrics(createTracesToMetricsConnector, metadata.TracesToMetricsStability),
+	)
 }
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		AttributeName: defaultVal,
+		AggregationTemporality: "AGGREGATION_TEMPORALITY_CUMULATIVE",
+		DimensionsCacheSize:    defaultDimensionsCacheSize,
+		MetricsFlushInterval:   15 * time.Second,
+		Histogram:              HistogramConfig{Disable: false, Unit: defaultUnit},
 	}
 }
 
-// createTracesToMetricsConnector defines the consumer type of the connector
-// We want to consume traces and export metrics, therefore, define nextConsumer as metrics, since consumer is the next component in the pipeline
 func createTracesToMetricsConnector(ctx context.Context, params connector.CreateSettings, cfg component.Config, nextConsumer consumer.Metrics) (connector.Traces, error) {
-	c, err := newConnector(params.Logger, cfg)
+	c, err := newConnector(params.Logger, cfg, metricsTicker(ctx, cfg))
 	if err != nil {
 		return nil, err
 	}
 	c.metricsConsumer = nextConsumer
 	return c, nil
+}
+
+func metricsTicker(ctx context.Context, cfg component.Config) *clock.Ticker {
+	return clock.FromContext(ctx).NewTicker(cfg.(*Config).MetricsFlushInterval)
 }
