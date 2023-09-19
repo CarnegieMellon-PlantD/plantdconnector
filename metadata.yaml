@@ -1,0 +1,9 @@
+type: plantd
+
+status:
+  class: connector
+  stability:
+    alpha: [traces_to_metrics]
+  distributions: [contrib, sumo, grafana]
+  codeowners:
+    active: [zitengshu]
