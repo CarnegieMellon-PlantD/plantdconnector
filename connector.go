@@ -232,7 +232,7 @@ func (p *connectorImp) buildMetrics() pmetric.Metrics {
 		rawMetrics.attributes.CopyTo(rm.Resource().Attributes())
 
 		sm := rm.ScopeMetrics().AppendEmpty()
-		sm.Scope().SetName("spanmetricsconnector")
+		sm.Scope().SetName("plantdconnector")
 
 		sums := rawMetrics.sums
 		metric := sm.Metrics().AppendEmpty()
