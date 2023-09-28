@@ -6,6 +6,7 @@ package plantdconnector
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -34,8 +35,8 @@ const (
 
 	defaultDimensionsCacheSize = 1000
 
-	metricNameDuration = "duration"
-	metricNameCalls    = "calls"
+	metricNameDuration = "plantd_duration"
+	metricNameCalls    = "plantd_calls"
 
 	defaultUnit = metrics.Milliseconds
 )
@@ -279,8 +280,11 @@ func (p *connectorImp) resetState() {
 func (p *connectorImp) aggregateMetrics(traces ptrace.Traces) {
 	for i := 0; i < traces.ResourceSpans().Len(); i++ {
 		rspans := traces.ResourceSpans().At(i)
+
 		resourceAttr := rspans.Resource().Attributes()
 		serviceAttr, ok := resourceAttr.Get(conventions.AttributeServiceName)
+		p.logger.Debug("[Resoource][resourceAttr]: " + fmt.Sprintf("%v", resourceAttr.AsRaw()))
+		p.logger.Debug("[Resoource][serviceName]: " + serviceAttr.Str())
 		if !ok {
 			continue
 		}
@@ -295,8 +299,10 @@ func (p *connectorImp) aggregateMetrics(traces ptrace.Traces) {
 		for j := 0; j < ilsSlice.Len(); j++ {
 			ils := ilsSlice.At(j)
 			spans := ils.Spans()
+			p.logger.Debug("[Scope][attr]: " + fmt.Sprintf("%v", ils.Scope().Attributes().AsRaw()))
 			for k := 0; k < spans.Len(); k++ {
 				span := spans.At(k)
+				p.logger.Debug("[Span][name]: " + fmt.Sprintf("%v", span.Name()))
 				// Protect against end timestamps before start timestamps. Assume 0 duration.
 				duration := float64(0)
 				startTime := span.StartTimestamp()
@@ -305,12 +311,13 @@ func (p *connectorImp) aggregateMetrics(traces ptrace.Traces) {
 					duration = float64(endTime-startTime) / float64(unitDivider)
 				}
 				key := p.buildKey(serviceName, span, p.dimensions, resourceAttr)
-
+				p.logger.Debug("[Span][key]: " + string(key))
 				attributes, ok := p.metricKeyToDimensions.Get(key)
 				if !ok {
 					attributes = p.buildAttributes(serviceName, span, resourceAttr)
 					p.metricKeyToDimensions.Add(key, attributes)
 				}
+				p.logger.Debug("[Span][attr]: " + fmt.Sprintf("%v", attributes.AsRaw()))
 				if !p.config.Histogram.Disable {
 					// aggregate histogram metrics
 					h := histograms.GetOrCreate(key, attributes)

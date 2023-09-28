@@ -20,4 +20,4 @@ replaces:
   # a list of "replaces" directives that will be part of the resulting go.mod
 
   # This replace statement is necessary since the newly added component is not found/published to GitHub yet. Replace references to GitHub path with the local path
-  - github.com/CarnegieMellon-PlantD/plantdconnector => C:/CMU/DPWT/plantdconnector
+  - github.com/CarnegieMellon-PlantD/plantdconnector => ../
